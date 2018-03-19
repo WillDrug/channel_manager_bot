@@ -5,9 +5,11 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+connection_string = config.db_conn % os.environ.get('SQLPWD')
+print(connection_string)
 Base = declarative_base()
 engine = create_engine(
-    config.db_conn % os.environ.get('SQLPWD'),
+    connection_string,
     pool_recycle=280
 )
 
