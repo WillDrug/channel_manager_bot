@@ -1,6 +1,8 @@
 import os
 import telepot
 import urllib3
+from uuid import uuid4
+path = uuid4()
 
 class Production:
     @staticmethod
