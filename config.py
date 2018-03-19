@@ -32,4 +32,4 @@ class Test:
     db_conn = "sqlite:///:memory:"
     webhook_addr = ''
 
-config = Test
+config = Production
