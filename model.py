@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 connection_string = config.db_conn % os.environ.get('SQLPWD')
-print(connection_string)
+
 Base = declarative_base()
 engine = create_engine(
     connection_string,
