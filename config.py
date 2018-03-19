@@ -33,3 +33,4 @@ class Test:
     webhook_addr = ''
 
 config = Production
+config.init_proxy()

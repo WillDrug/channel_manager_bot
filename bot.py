@@ -4,7 +4,7 @@ from model import Channel, session
 from config import config
 from sqlalchemy.orm import Session
 assert isinstance(session,Session)
-config.init_proxy()
+
 
 
 token = os.environ.get('SECRET')
