@@ -20,7 +20,7 @@ class Production:
         urllib3.ProxyManager, dict(proxy_url=proxy_url, num_pools=1, maxsize=1, retries=False, timeout=30))
         # ----------------------------------------
 
-    db_conn = "mysql://willdrug:%s@willdrug.mysql.pythonanywhere-services.com/willdrug$cmb"
+    db_conn = "mysql://willdrug:%s@willdrug.mysql.pythonanywhere-services.com/willdrug$cmb" % os.environ.get('SQLPWD')
     webhook_addr = f"https://willdrug.pythonanywhere.com/{path}"
 
 class Test:
@@ -29,7 +29,7 @@ class Test:
         project_folder = os.path.expanduser('F:\\WOrk\\channel_manager_bot')  # adjust as appropriate
         load_dotenv(os.path.join(project_folder, '.env'))
 
-    db_conn = "sqlite:///:memory:"
+    db_conn = "sqlite:///test.db"
     webhook_addr = ''
 
 config = Production

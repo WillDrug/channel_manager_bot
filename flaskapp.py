@@ -12,7 +12,6 @@ bot.setWebhook(config.webhook_addr, max_connections=1)
 
 webhook = OrderedWebhook(bot, handle)
 webhook.run_as_thread()
-print('got htere')
 
 @app.route(f'/{path}', methods=["POST"])
 def telegram_webhook():

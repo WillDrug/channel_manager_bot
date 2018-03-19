@@ -5,11 +5,11 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-connection_string = config.db_conn % os.environ.get('SQLPWD')
+
 
 Base = declarative_base()
 engine = create_engine(
-    connection_string,
+    config.db_conn,
     pool_recycle=280
 )
 
@@ -26,6 +26,4 @@ class Channel(Base):
         )
 
 Base.metadata.create_all(engine)
-Session = sessionmaker()
-Session.configure(bind=engine)
-session = Session()
+session = sessionmaker(bind=engine)()
