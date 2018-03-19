@@ -17,8 +17,8 @@ engine = create_engine(
 class Channel(Base):
     __tablename__ = 'channels'
 
-    id = Column(String, primary_key=True)
-    name = Column(String)
+    id = Column(String(255), primary_key=True)
+    name = Column(String(255))
 
     def __repr__(self):
         return "<Channel(id='%s', name='%s')>" % (
