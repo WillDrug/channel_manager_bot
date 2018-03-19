@@ -1,13 +1,13 @@
-
+import os
 from config import config
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-print(config.db_conn)
+
 Base = declarative_base()
 engine = create_engine(
-    config.db_conn,
+    config.db_conn % os.environ.get('SQLPWD'),
     pool_recycle=280
 )
 
