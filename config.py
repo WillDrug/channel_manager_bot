@@ -20,7 +20,7 @@ class Production:
         urllib3.ProxyManager, dict(proxy_url=proxy_url, num_pools=1, maxsize=1, retries=False, timeout=30))
         # ----------------------------------------
 
-    db_conn = "mysql://willdrug:%s@willdrug.mysql.pythonanywhere-services.com/cmb"
+    db_conn = "mysql://willdrug:%s@willdrug.mysql.pythonanywhere-services.com/willdrug$cmb"
     webhook_addr = f"https://willdrug.pythonanywhere.com/{path}"
 
 class Test:
