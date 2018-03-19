@@ -21,8 +21,8 @@ class Production:
         project_folder = os.path.expanduser('~/channel_manager_bot')  # adjust as appropriate
         load_dotenv(os.path.join(project_folder, '.env'))
 
-        db_conn = "mysql://willdrug:%s@willdrug.mysql.pythonanywhere-services.com/willdrug$cmb" % os.environ.get('SQLPWD')
-        webhook_addr = f"https://willdrug.pythonanywhere.com/{path}"
+        self.db_conn = "mysql://willdrug:%s@willdrug.mysql.pythonanywhere-services.com/willdrug$cmb" % os.environ.get('SQLPWD')
+        self.webhook_addr = f"https://willdrug.pythonanywhere.com/{path}"
 
 class Test:
     @staticmethod
@@ -32,8 +32,8 @@ class Test:
     def __init__(self):
         project_folder = os.path.expanduser('F:\\Work\\channel_manager_bot')  # adjust as appropriate
         load_dotenv(os.path.join(project_folder, '.env'))
-        db_conn = "sqlite:///test.db"
-        webhook_addr = ''
+        self.db_conn = "sqlite:///test.db"
+        self.webhook_addr = ''
 
 
 config = Production()
