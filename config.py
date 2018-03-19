@@ -21,6 +21,7 @@ class Production:
         # ----------------------------------------
 
     db_conn = "mysql://willdrug:%s@willdrug.mysql.pythonanywhere-services.com/willdrug$cmb" % os.environ.get('SQLPWD')
+    print(db_conn)
     webhook_addr = f"https://willdrug.pythonanywhere.com/{path}"
 
 class Test:
