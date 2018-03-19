@@ -8,6 +8,7 @@ config.init_proxy()
 
 
 token = os.environ.get('SECRET')
+print(token)
 bot = Bot(token)
 bot.deleteWebhook()
 
