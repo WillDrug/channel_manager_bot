@@ -18,3 +18,27 @@ bot.deleteWebhook()
 def handle(msg):
     c = session.query(Channel).first()
     bot.sendMessage(msg['from']['id'], c.name)
+
+
+"""
+Menu:
+    Submit
+        -> Choose channel  # DEEPLINK
+            -> post
+    Manage
+        -> Choose channel  # DEEPLINK?
+            -> Ban List /w Pagination
+            -> Unban
+                -> write nick  # NO BUTTONS
+            -> Moderator List
+                -> Demote
+    Approve
+        -> Choose channel  # DEEPLINK FROM INLINE
+            -> Approve
+            -> Dismiss
+            -> Ban
+
+Posts to approve are sent to moderators who are in approve session;
+After timeout (handling?) it is resent to another;
+
+"""
