@@ -23,12 +23,9 @@ class Production:
 
         self.db_conn = "mysql://willdrug:%s@willdrug.mysql.pythonanywhere-services.com/willdrug$cmb" % os.environ.get('SQLPWD')
         self.webhook_addr = f"https://willdrug.pythonanywhere.com/{path}"
+        Production.init_proxy()
 
 class Test:
-    @staticmethod
-    def init_proxy():
-        pass
-
     def __init__(self):
         project_folder = os.path.expanduser('F:\\Work\\channel_manager_bot')  # adjust as appropriate
         load_dotenv(os.path.join(project_folder, '.env'))
