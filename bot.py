@@ -1,4 +1,4 @@
-import os
+import os, sys
 from telepot.exception import TelegramError
 from telepot import Bot, glance
 from model import Channel, session
@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 assert isinstance(session,Session)
 
 import logging
-logging.basicConfig(filename='flask.log', level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG, stream=sys.stderr)
 
 
 token = os.environ.get('SECRET')
