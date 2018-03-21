@@ -1,6 +1,6 @@
 import os
 from telepot import Bot, glance, flavor
-from model import Channel, UserContext, session
+from model import Channel, UserContext, Invite, session
 from config import config
 
 
@@ -52,17 +52,43 @@ def route(menu, msg):
 def main_menu(msg):
     # presuming msg is CHAT
     content_type, chat_type, chat_id = glance(msg)
+    # 1) send  basic menu info
+    bot.sendMessage(chat_id, 'Hello! I am Channel Manager Bot!\nPlease pardon the lag, my server is made of potatoes and is free.')
+    # 2) If that's main menu we have no channel; Text is treated as a command
     if content_type == 'text':
         command = get_command(msg['text'])
-        if command == 'start':
+        if command == '/start':
+            try:
+                command, option, invite_hash = msg['text'].split(';')
+            except ValueError:
+                # 3) someone has no idea what are they doing at all
+                option = ''
+
+            # possible opt+ions:
+            # 1) someone registered as mod -> there's a modhash
+            if option == 'invite':
+                invite = session.query(Invite).filter(invite_hash=invite_hash).first()
+                if invite is None:
+                    return bot.sendMessage(chat_id, 'You cheating bastard, you!')
+                invite.channel
+            # 2) someone got here from channel to submit -> set context to choose channel, goto submit menu
+            elif option == 'submit':
+                pass
+            # 3) someone has no idea what are they doing at all
+            else:
+                bot.sendMessage(chat_id, help_message(),
+                                reply_markup=[])  # TODO: reply buttons
+        elif command == '/manage':
+            # tell him to fuck off from private
             pass
 
+        # 3) everything else is used as submission material -> then we ask for a channel
     else:
-        return help_message(chat_id)
+        return bot.sendMessage(chat_id, help_message())
 
 # UTILITY
-def help_message(chat_id):
-    return bot.sendMessage(chat_id, 'THIS IS HELP')
+def help_message():
+    return 'THIS IS HELP'
 
 def get_command(text):
     return text[:min(text.index('@'), text.index(' '))]
