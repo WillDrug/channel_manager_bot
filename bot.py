@@ -6,7 +6,8 @@ from config import config
 from sqlalchemy.orm import Session
 assert isinstance(session,Session)
 
-
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 token = os.environ.get('SECRET')
 
@@ -20,6 +21,7 @@ bot.deleteWebhook()
 def handle(msg):
     #c = session.query(Channel).first()
     #bot.sendMessage(msg['from']['id'], c.name)
+    logging.debug(glance(msg))
     bot.sendMessage(msg['from']['id'], 'test response')
 
 
