@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 assert isinstance(session,Session)
 
 import logging
-logging.basicConfig(level=logging.DEBUG, filename=sys.stderr)
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 
 token = os.environ.get('SECRET')
