@@ -13,5 +13,6 @@ webhook.run_as_thread()
 
 @app.route(f'/{config.webhook_addr}', methods=["POST"])
 def telegram_webhook():
+    raise Exception('cheat')
     webhook.feed(request.data)
     return "OK"
