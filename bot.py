@@ -20,7 +20,11 @@ bot.deleteWebhook()
 def handle(msg):
     #c = session.query(Channel).first()
     #bot.sendMessage(msg['from']['id'], c.name)
-    bot.sendMessage(msg['from']['id'], glance(msg)[0])
+    try:
+        text = glance(msg)[0]
+    except Exception as e:
+        text = e.__str__()
+    bot.sendMessage(msg['from']['id'], text)
 
 
 """
