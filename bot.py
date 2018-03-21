@@ -6,8 +6,6 @@ from config import config
 from sqlalchemy.orm import Session
 assert isinstance(session,Session)
 
-import logging
-logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 
 token = os.environ.get('SECRET')
@@ -22,14 +20,7 @@ bot.deleteWebhook()
 def handle(msg):
     #c = session.query(Channel).first()
     #bot.sendMessage(msg['from']['id'], c.name)
-    try:
-        text = glance(msg)[0]
-        logging.debug('text is ok')
-    except Exception as e:
-        logging.debug(f'text is {e.__str__()}')
-        text = "ERROR"
-
-    bot.sendMessage(msg['from']['id'], text)
+    bot.sendMessage(msg['from']['id'], 'test response')
 
 
 """
