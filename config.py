@@ -3,6 +3,7 @@ import os
 import telepot
 import urllib3
 from uuid import uuid4
+import logging
 path = uuid4()
 
 
@@ -20,7 +21,6 @@ class Production:
     def __init__(self):
         project_folder = os.path.expanduser('~/channel_manager_bot')  # adjust as appropriate
         load_dotenv(os.path.join(project_folder, '.env'))
-
         self.db_conn = "mysql://willdrug:%s@willdrug.mysql.pythonanywhere-services.com/willdrug$cmb" % os.environ.get('SQLPWD')
         self.webhook_addr = f"https://willdrug.pythonanywhere.com/{path}"
         self.path = path
@@ -28,6 +28,7 @@ class Production:
 
 class Test:
     def __init__(self):
+        logging.basicConfig(level=logging.DEBUG)
         project_folder = os.path.abspath('')  # adjust as appropriate
         load_dotenv(os.path.join(project_folder, '.env'))
         self.db_conn = "sqlite:///test.db"
@@ -35,4 +36,4 @@ class Test:
         self.path = ''
 
 
-config = Production()
+config = Test()

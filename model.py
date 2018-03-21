@@ -25,5 +25,12 @@ class Channel(Base):
             self.id, self.name
         )
 
+class UserContext(Base):
+    __tabename__ = 'contexts'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String(255))
+    menu = Column(String(25))
+
 Base.metadata.create_all(engine)
 session = sessionmaker(bind=engine)()
