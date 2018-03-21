@@ -33,4 +33,4 @@ class Test:
         self.webhook_addr = ''
 
 
-config = Test()
+config = Production()
