@@ -21,7 +21,7 @@ bot.deleteWebhook()
 def handle(msg):
     #c = session.query(Channel).first()
     #bot.sendMessage(msg['from']['id'], c.name)
-    logging.debug(glance(msg))
+    print(msg)
     bot.sendMessage(msg['from']['id'], 'test response')
 
 
