@@ -6,6 +6,8 @@ from config import config
 from sqlalchemy.orm import Session
 assert isinstance(session,Session)
 
+import logging
+logging.basicConfig(filename='flask.log', level=logging.DEBUG)
 
 
 token = os.environ.get('SECRET')
@@ -22,8 +24,11 @@ def handle(msg):
     #bot.sendMessage(msg['from']['id'], c.name)
     try:
         text = glance(msg)[0]
+        logging.debug('text is ok')
     except Exception as e:
-        text = e.__str__()
+        logging.debug(f'text is {e.__str__()}')
+        text = "ERROR"
+
     bot.sendMessage(msg['from']['id'], text)
 
 
