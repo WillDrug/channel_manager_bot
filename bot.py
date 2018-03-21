@@ -95,23 +95,37 @@ def get_command(text):
 
 """
 Menu:
-    Submit
-        -> Choose channel  # DEEPLINK
-            -> post
-    Manage
-        -> Choose channel  # DEEPLINK?
-            -> Ban List /w Pagination
-            -> Unban
-                -> write nick  # NO BUTTONS
-            -> Moderator List
-                -> Demote
-    Approve
-        -> Choose channel  # DEEPLINK FROM INLINE
-            -> Approve
-            -> Dismiss
-            -> Ban
-
+    send anything that's not a proper command == submit
+        -> Choose channel  # DEEPLINK HERE
+            -> submit to moderator
+    Approve : no button, auto sends shit to you
+        -> Approve # no usernames here
+        -> Decline 
+        -> Ban
+    /admin # only shows up if you're an owner of at least one channel
+        -> Choose channel 
+            -> /ban list /w Pagination
+            -> /unban username
+            -> /modlist
+            -> /unmod username
+            /unmanage -> kills pinned message, send message that this is over, leaves channel (CONFIRM!!)
+    -> Register Mod (inline)
+        -> Mod registered # DEEPLINK FROM INLINE
+    /unmod: #only appears if you're in modlist 
+            -> Choose a channel
+    /manage???/start own: #not showing up
+        1) Registeres channel, owner
+        2) Sends and pins a message to channel
+        
+In channel:
+    -> /manage
+        0) checks admin privileges; if not : shit, mate.
+        1) generates switch chat button or deeplink for owner
+        
 Posts to approve are sent to moderators who are in approve session;
-After timeout (handling?) it is resent to another;
+After timeout (handling?) it is resent to another; ?????
+
+1) If all mods and owner are unreachable -> ok, but warns submitters
+2) If channel is unreachable -> kills channel from list with a warning
 
 """

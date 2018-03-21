@@ -19,6 +19,8 @@ class Channel(Base):
 
     id = Column(String(255), primary_key=True)
     name = Column(String(255))  #mnemonic
+    owner = Column(Integer)
+    pinned_id = Column(Integer)
 
     def __repr__(self):
         return "<Channel(id='%s', name='%s')>" % (
