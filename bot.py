@@ -1,5 +1,4 @@
-import os, sys
-from telepot.exception import TelegramError
+import os
 from telepot import Bot, glance
 from model import Channel, session
 from config import config
@@ -21,7 +20,7 @@ bot.deleteWebhook()
 def handle(msg):
     #c = session.query(Channel).first()
     #bot.sendMessage(msg['from']['id'], c.name)
-    bot.sendMessage(msg['from']['id'], glance(msg)[0])
+    bot.sendMessage(msg['message']['from']['id'], glance(msg['message'])[0])
 
 
 """
