@@ -20,15 +20,7 @@ bot.deleteWebhook()
 # 'last_name': 'Bobkov', 'username': 'WillDrug', 'type
 # ': 'private'}, 'date': 1521465604, 'text': 'test'}
 def handle(msg):
-    #c = session.query(Channel).first()
-    #bot.sendMessage(msg['from']['id'], c.name)
-    try:
-        text = glance(msg)[0]
-        logging.debug('text is ok')
-    except Exception as e:
-        logging.debug(f'text is {e.__str__()}')
-        text = "ERROR"
-
+    logging.critical('HANDLING!')
     bot.sendMessage(msg['from']['id'], text)
 
 
