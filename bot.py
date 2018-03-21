@@ -21,6 +21,7 @@ bot.deleteWebhook()
 def handle(msg):
     #c = session.query(Channel).first()
     #bot.sendMessage(msg['from']['id'], c.name)
+    raise Exception(f'cheating: {msg}')
     bot.sendMessage(msg['from']['id'], 'test response')
 
 

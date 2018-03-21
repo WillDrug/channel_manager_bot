@@ -15,7 +15,5 @@ webhook.run_as_thread()
 
 @app.route(f'/{path}', methods=["POST"])
 def telegram_webhook():
-    app.logger.error(request.data)
     webhook.feed(request.data)
-    app.logger.error('fed request to function')
     return "OK"
