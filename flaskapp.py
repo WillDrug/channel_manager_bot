@@ -11,8 +11,7 @@ bot.setWebhook(config.webhook_addr, max_connections=1)
 webhook = OrderedWebhook(bot, handle)
 webhook.run_as_thread()
 
-@app.route(f'/{config.webhook_addr}', methods=["POST"])
+@app.route(f'/{config.path}', methods=["POST"])
 def telegram_webhook():
-    raise Exception('cheat')
     webhook.feed(request.data)
     return "OK"

@@ -23,6 +23,7 @@ class Production:
 
         self.db_conn = "mysql://willdrug:%s@willdrug.mysql.pythonanywhere-services.com/willdrug$cmb" % os.environ.get('SQLPWD')
         self.webhook_addr = f"https://willdrug.pythonanywhere.com/{path}"
+        self.path = path
         init_proxy()
 
 class Test:
@@ -31,6 +32,7 @@ class Test:
         load_dotenv(os.path.join(project_folder, '.env'))
         self.db_conn = "sqlite:///test.db"
         self.webhook_addr = ''
+        self.path = ''
 
 
 config = Production()
