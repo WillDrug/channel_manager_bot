@@ -16,8 +16,9 @@ bot.deleteWebhook()
 # 'last_name': 'Bobkov', 'username': 'WillDrug', 'type
 # ': 'private'}, 'date': 1521465604, 'text': 'test'}
 def handle(msg):
-    c = session.query(Channel).first()
-    bot.sendMessage(msg['from']['id'], c.name)
+    #c = session.query(Channel).first()
+    #bot.sendMessage(msg['from']['id'], c.name)
+    print(telepot.glance(msg))
 
 
 """
