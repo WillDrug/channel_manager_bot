@@ -27,10 +27,10 @@ class Production:
 
 class Test:
     def __init__(self):
-        project_folder = os.path.expanduser('F:\\Work\\channel_manager_bot')  # adjust as appropriate
+        project_folder = os.path.abspath('')  # adjust as appropriate
         load_dotenv(os.path.join(project_folder, '.env'))
         self.db_conn = "sqlite:///test.db"
         self.webhook_addr = ''
 
 
-config = Production()
+config = Test()

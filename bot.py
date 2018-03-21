@@ -1,5 +1,6 @@
 import os
-from telepot import Bot
+from telepot.exception import TelegramError
+from telepot import Bot, glance
 from model import Channel, session
 from config import config
 from sqlalchemy.orm import Session
@@ -8,6 +9,7 @@ assert isinstance(session,Session)
 
 
 token = os.environ.get('SECRET')
+
 bot = Bot(token)
 bot.deleteWebhook()
 
@@ -18,7 +20,7 @@ bot.deleteWebhook()
 def handle(msg):
     #c = session.query(Channel).first()
     #bot.sendMessage(msg['from']['id'], c.name)
-    print(telepot.glance(msg))
+    bot.sendMessage(msg['from']['id'], glance(msg))
 
 
 """
