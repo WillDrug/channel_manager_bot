@@ -1,5 +1,6 @@
 import os
 from telepot import Bot, glance, flavor
+from telepot.exception import TelegramError
 from model import Channel, UserContext, Invite, Mod, Banned, Message, session
 from config import config
 
@@ -22,14 +23,20 @@ def handle(msg):
     if flavour == 'chat':
         #short: (content_type, msg['chat']['type'], msg['chat']['id'])
         content_type, chat_type, chat_id = glance(msg)
-        if chat_type != 'private':
+        if chat_type == 'private':
+            context = session.query(UserContext).filter(id=chat_id).first()
+            if context is None:
+                context = UserContext(id=chat_id, username=msg['from']['username'], menu='main_menu')
+                session.add(context)
+                session.commit()
+            return route(context.menu, msg)
+        elif chat_type == 'channel':
+            if content_type == 'text':
+                return channel_commands(msg, chat_id)
+            else:
+                return True
+        else:
             return True
-        context = session.query(UserContext).filter(id=chat_id).first()
-        if context is None:
-            context = UserContext(id=chat_id, username=msg['from']['username'], menu='main_menu')
-            session.add(context)
-            session.commit()
-        return route(context.menu, msg)
     if flavour == 'callback_query':
         pass
     if flavour == 'inline_query':
@@ -53,7 +60,7 @@ def route(menu, msg):
     else:
         return True
 
-def main_menu(msg):
+def main_private_menu(msg):
     # presuming msg is CHAT
     content_type, chat_type, chat_id = glance(msg)
     # 1) send  basic menu info
@@ -96,6 +103,7 @@ def main_menu(msg):
                     if not manage_channel(channel):
                         bot.sendMessage(chat_id, f'Couldn\'t manage {channel.name}\n'
                                                  f'Make sure I\'m there and have privileges to pin and post')
+                        bot.leaveChat(channel.id)  # lol
                         session.delete(channel)
                         session.commit()
             # 4) someone has no idea what are they doing at all
@@ -110,7 +118,40 @@ def main_menu(msg):
     else:
         return bot.sendMessage(chat_id, help_message())
 
-# UTILITY
+# channel comms
+def channel_commands(msg, chat_id):
+    # presuming CHAT - TEXT
+    command = get_command(msg['text'])
+    if command == '/manage':
+        ch = Channel(id=chat_id, name=msg['chat']['title'], owner=msg['from']['id'])
+        session.add(ch)
+        session.commit()
+        try:
+            bot.sendMessage(msg['from']['id'], 'Hello!')
+            # chat with owner is opened, ok
+            if not manage_channel(ch):
+                session.delete(ch)
+                session.commit()
+                bot.sendMessage(msg['from']['id'], 'Couldn\'t start managing the channel. \n'
+                                                   'Make sure I can send and edit messages and re-run /manage')
+        except TelegramError:
+            # no chat with owner. do basic stuff and wait for /own link \ command
+            bot.sendMessage(chat_id, f"Ready to manage channel; Use this link and START button to confirm:\n"
+                                     f"http://t.me/{bot.getMe().get('username')}?start=;own;",)
+    elif command == '/unmanage':
+        channel = session.query(Channel).filter(Channel.id == chat_id).first()
+        if channel is None:
+            bot.sendMessage(chat_id, 'Yeah, I don\'t manage that.')
+            return True  # TODO: differentiate between good and bad, update bullshit counter for user
+        elif channel.owner != msg['from']['id']:
+            return True  # TODO: bullshit counter
+        else:
+            unmanage_channel(channel)  # TODO: confirmation button\personal msg
+    else:
+        return True
+
+
+# generics
 def manage_channel(channel):
     channel_id = channel.id
     # 1) check admin rights
@@ -129,7 +170,7 @@ def manage_channel(channel):
         channel_id,
         f"This channel is now managed by me!\n"
         f"If you want to submit something to this channel, message me personally or just go here:\n"
-        f"http://t.me/{bot.getMe().get('username')}?start=submit;",
+        f"http://t.me/{bot.getMe().get('username')}?start=;submit;",
         disable_web_page_preview=True,
         disable_notification=True,
     )
@@ -140,17 +181,14 @@ def manage_channel(channel):
     session.commit()  # commit this.
     return True
 
-
 def unmanage_channel(channel):
     bot.unpinChatMessage(channel.id)
     bot.sendMessage(channel.id, 'This channel is no longer managed by the bot')
-    mods = session.query(Mod).filter(Mod.channel == channel.id).all()
-    for mod in mods:
-        session.delete(mod)
-    session.query(Banned)
-    session.query(Invite)
-    session.query(Message)
+    bot.leaveChat(channel.id)
+    session.delete(channel)
     session.commit()
+
+# UTILITY
 
 def help_message():
     return 'THIS IS HELP'
@@ -174,19 +212,21 @@ Menu:
             -> /modlist
             -> /unmod username
             /unmanage -> kills pinned message, send message that this is over, leaves channel (CONFIRM!!)
+    
     -> Register Mod (inline)
         -> Mod registered # DEEPLINK FROM INLINE
+    
     /unmod: #only appears if you're in modlist 
             -> Choose a channel
-    /manage???/start own: #not showing up
+    /start;own; #not showing up --> DONE
         1) Registeres channel, owner
         2) Sends and pins a message to channel
         
 In channel:
-    -> /manage
+    -> /manage --> DONE
         0) checks admin privileges; if not : shit, mate.
-        1) generates switch chat button or deeplink for owner
-        
+        1) generates switch chat button or deeplink for owner --> TODO
+    -> /unmanage --> DONE
 Posts to approve are sent to moderators who are in approve session;
 After timeout (handling?) it is resent to another; ?????
 

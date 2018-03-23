@@ -32,7 +32,7 @@ class Channel(Base):
         )
 
 class UserContext(Base):
-    __tabename__ = 'contexts'
+    __tablename__ = 'contexts'
 
     id = Column(Integer, primary_key=True)
     username = Column(String(255))
@@ -42,12 +42,13 @@ class UserContext(Base):
 class Mod(Base):
     __tablename__ = 'moderators'
 
+    id = Column(Integer, primary_key=True, autoincrement=True)
     channel = Column(String(255), ForeignKey('channels.id'))
     mod_id = Column(Integer)
 
 class Banned(Base):
     __tablename__ = 'banlist'
-
+    id = Column(Integer, primary_key=True, autoincrement=True)
     channel = Column(String(255), ForeignKey('channels.id'))
     user = Column(Integer)
 
@@ -60,6 +61,7 @@ class Invite(Base):
 class Message(Base):
     __tablename__ = 'messages'
 
+    id = Column(Integer, primary_key=True, autoincrement=True)
     from_id = Column(Integer)
     from_username = Column(String(255))
     message_id = Column(Integer)
