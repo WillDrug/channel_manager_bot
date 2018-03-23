@@ -1,9 +1,9 @@
 import os
 from config import config
 from sqlalchemy import create_engine
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker, relationship, backref
 
 
 
@@ -27,8 +27,8 @@ class Channel(Base):
     messagequeue = relationship("Message", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return "<Channel(id='%s', name='%s')>" % (
-            self.id, self.name
+        return "<Channel(id='%s', name='%s', owner='%s', pinned_id='%s')>" % (
+            self.id, self.name, self.owner, self.pinned_id
         )
 
 class UserContext(Base):
@@ -45,16 +45,21 @@ class Mod(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     channel = Column(String(255), ForeignKey('channels.id'))
     mod_id = Column(Integer)
+    mod_name = Column(String(255))
+
+    messages = relationship('Message', backref=backref('messages.assigned_mod'))
 
 class Banned(Base):
     __tablename__ = 'banlist'
     id = Column(Integer, primary_key=True, autoincrement=True)
     channel = Column(String(255), ForeignKey('channels.id'))
     user = Column(Integer)
+    username = Column(String(255))
 
 class Invite(Base):
     __tablename__ = 'invites'
 
+    #query_id = Column(String(50), primary_key=True)
     invite_hash = Column(String(38), primary_key=True)
     channel = Column(String(255), ForeignKey('channels.id'))
 
@@ -63,11 +68,14 @@ class Message(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     from_id = Column(Integer)
-    from_username = Column(String(255))
+    from_username = Column(String(255), nullable=True)
     message_id = Column(Integer)
     channel = Column(String(255), ForeignKey('channels.id'))
+    show_username = Column(Boolean, default=False)
+    assigned_mod = Column(Integer, ForeignKey('moderators.mod_id'), nullable=True)
     submitted_on = Column(Integer)
     published_on = Column(Integer)
+    current_request = Column(Integer, nullable=True)
 
 
 Base.metadata.create_all(engine)
