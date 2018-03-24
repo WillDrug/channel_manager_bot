@@ -71,11 +71,11 @@ class Message(Base):
     from_id = Column(Integer)
     from_username = Column(String(255), nullable=True)
     message_id = Column(Integer)
-    channel = Column(String(255), ForeignKey('channels.id'))
+    channel = Column(String(255), ForeignKey('channels.id'), nullable=True)
     show_username = Column(Boolean, default=False)
     assigned_mod = Column(Integer, ForeignKey('moderators.mod_id'), nullable=True)
-    submitted_on = Column(Integer)
-    published_on = Column(Integer)
+    submitted_on = Column(Integer, nullable=True)
+    published_on = Column(Integer, nullable=True)
     current_request = Column(Integer, nullable=True)
 
 
