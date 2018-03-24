@@ -19,6 +19,7 @@ class Channel(Base):
 
     id = Column(String(255), primary_key=True)
     name = Column(String(255))  #mnemonic
+    link = Column(String(50), nullable=True)
     owner = Column(Integer)
     pinned_id = Column(Integer, nullable=True)
     modlist = relationship("Mod", cascade="all, delete-orphan")

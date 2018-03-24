@@ -7,7 +7,9 @@ from model import Channel, UserContext, Invite, Mod, Banned, Message, session
 from config import config
 from sqlalchemy import func
 
-demiurge = 391834810 # TODO: add maintainer chat id
+# TODO: plan on DB expansion and migration
+
+demiurge = 391834810
 bullshit_threshhold = 20
 
 token = os.environ.get('SECRET')
@@ -22,18 +24,16 @@ bot.deleteWebhook()
 def accept_review(send_to, msg_id):
     return bot.sendMessage(send_to, f'Ready to submit! Choose if you want your username displayed:',
                            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
-                               InlineKeyboardButton(text='Submit', callback_data=f'submit_{msg_id}'),
+                               InlineKeyboardButton(text='Submit', callback_data=f'submission_submit_{msg_id}'),
                                #InlineKeyboardButton(text='Submit Anonymous', callback_data=f'hsubmit_{msg_id}'),
-                               InlineKeyboardButton(text='Cancel', callback_data=f'cancel_{msg_id}')
+                               InlineKeyboardButton(text='Cancel', callback_data=f'submission_cancel_{msg_id}')
                            ]])
                            )
 
 
 def handle(msg):
-    print(msg)
     flavour = flavor(msg)
     if flavour == 'chat':
-        #short: (content_type, msg['chat']['type'], msg['chat']['id'])
         content_type, chat_type, chat_id = glance(msg)
         if chat_type == 'private':
             context = session.query(UserContext).filter(UserContext.id == chat_id).first()
@@ -64,84 +64,89 @@ def handle(msg):
                 return True
         else:
             return True
-    if flavour == 'callback_query':
+    if flavour == 'callback_query':  # TODO: switch literals to config strings
         query_id, from_id, query_data = glance(msg, flavor='callback_query')
-        choice, data = query_data.split('_')
+        choice, action, data = query_data.split('_')
         context = session.query(UserContext).filter(UserContext.id == from_id).first()
         if context is None:
             # WHAT?!
             return True
-        if choice in ['choice', 'schoice', 'uchoice']:  # TODO: switch those blocks to another SPLIT
+        if choice == 'choice':
             ch = session.query(Channel).filter(Channel.id == data).first()
             if ch is None:
                 return bot.sendMessage(from_id, 'That\' not something I manage... Weird')
             context.channel = ch.id
             context.menu = 'channel_menu'
             session.commit()
-        if choice == 'choice':
-            return bot.sendMessage(from_id, f'Okay, chosen!\nSend me something as a submission'
-                                            f'Use /unmod if you are modding and tired of it\n'
-                                            f'or /admin if you\'re an admin\n'
-                                            f'/reset will get you back')
-        elif choice == 'schoice':
-            # already chosen channel. now do submitting
-            # TODO: submission check
-            msg = session.query(Message).filter().first()
-            to_delete = accept_review(from_id, '@tofix') # TODO
-            msg.current_request = f"{from_id};{to_delete['message_id']}"
-            session.commit()
-        elif choice == 'uchoice':
-            mod = session.query(Mod).filter(Mod.id == from_id).filter(Mod.channel == data).first()
-            if mod is None:
-                return bot.sendMessage(from_id, 'You are not modding that...')
+            if action == 'none':
+                return bot.sendMessage(from_id, f'Okay, chosen!\nSend me something as a submission'
+                                                f'Use /unmod if you are modding and tired of it\n'
+                                                f'or /admin if you\'re an admin\n'
+                                                f'/reset will get you back')
+            elif action == 'unmod':
+                mod = session.query(Mod).filter(Mod.id == from_id).filter(Mod.channel == data).first()
+                if mod is None:
+                    return bot.sendMessage(from_id, 'You are not modding that...')
+                else:
+                    user = mod.mod_name
+                    session.delete(mod)
+                    session.commit()
+                    bot.sendMessage(ch.owner, f'{user} is tired and is no longer a mod')
+                    return bot.sendMessage(from_id, 'Success! You are not submitting to {ch.name}\nUser /reset to go back')
             else:
-                user = mod.mod_name
-                session.delete(mod)
+                # action contains submission id
+                # TODO: submission check
+                msg = session.query(Message).filter(Message.id == action).first()
+                to_delete = accept_review(from_id, msg.message_id)  # TODO
+                msg.current_request = f"{from_id};{to_delete['message_id']}"
                 session.commit()
-                bot.sendMessage(ch.owner, f'{user} is tired and is no longer a mod')
-                return bot.sendMessage(from_id, 'Success! You are not submitting to {ch.name}\nUser /reset to go back')
 
-        if choice in ['submit', 'cancel', 'approve', 'decline', 'ban']:
+        if choice == 'submission':
             msg = session.query(Message).filter(Message.id == data).first()
             if msg is None:
                 return bot.answerCallbackQuery(query_id, text='You have already done that')
             else:
                 cr_chat, cr_id = msg.current_request.split(';')
                 bot.editMessageReplyMarkup((cr_chat, cr_id), InlineKeyboardMarkup(inline_keyboard=[[]]))
-        if choice == 'submit':
-            return submit_to_review(msg)
+            if action == 'submit':
+                return submit_to_review(msg)
 
-        elif choice == 'cancel':
-            session.delete(msg)
-            session.commit()
-            return bot.sendMessage(from_id, 'As you wish')
+            elif action == 'cancel':
+                session.delete(msg)
+                session.commit()
+                return bot.sendMessage(from_id, 'As you wish')
 
-        elif choice == 'approve':
-            # TODO: info creator
-            msg_channel = msg.channel
-            msg_from_id = msg.from_id
-            msg_message_id = msg.message_id
-            session.delete(msg)
-            session.commit()
-            return bot.forwardMessage(msg_channel, msg_from_id, msg_message_id)
+            elif action == 'approve':
+                msg_channel = msg.channel
+                msg_from_id = msg.from_id
+                msg_message_id = msg.message_id
+                session.delete(msg)
+                session.commit()
+                to_link = bot.forwardMessage(msg_channel, msg_from_id, msg_message_id)
+                ch = session.query(Channel).filter(Channel.id == msg.channel).first()
+                result = f"{msg['from']['username']} approved a message in {ch.name}:"
+                if ch.link is not None:
+                    result = result + f"\nhttp://t.me/{ch.link}/{to_link['message_id']}"
+                return bot.sendMessage(ch.owner, result)
 
-        elif choice == 'decline':
-            chat_id = msg.from_id
-            reply_to = msg.message_id
-            session.delete(msg)
-            session.commit()
-            bot.sendMessage(msg.from_id, 'Your submission was declined. Sorry.', reply_to_message_id=reply_to)
-            return bot.sendMessage(chat_id, 'Done!')
+            elif action == 'decline':
+                chat_id = msg.from_id
+                reply_to = msg.message_id
+                session.delete(msg)
+                session.commit()
+                bot.sendMessage(msg.from_id, 'Your submission was declined. Sorry.', reply_to_message_id=reply_to)
+                # TODO V2: verbose options to creator
+                return bot.sendMessage(chat_id, 'Done!')
 
-        elif choice == 'ban':
-            ban = Banned(channel=msg.channel, user=msg.from_id, username=msg.from_username)
-            session.add(ban)
-            session.delete(msg)
-            session.commit()
-            bot.sendMessage(ban.user, 'You have been banned by a mod.\nYou can be unbanned only by the channel creator')
-            return bot.sendMessage(from_id, 'Ban succesfull\nNote that only channel creator can unban!')
+            elif action == 'ban':
+                ban = Banned(channel=msg.channel, user=msg.from_id, username=msg.from_username)
+                session.add(ban)
+                session.delete(msg)
+                session.commit()
+                bot.sendMessage(ban.user, 'You have been banned by a mod.\nYou can be unbanned only by the channel creator') # TODO v2: shadowban option
+                return bot.sendMessage(from_id, 'Ban succesfull\nNote that only channel creator can unban!')
         else:
-            return True  # TODO may be something?
+            return True  # TODO v2: may be something? bullshit counter?
     if flavour == 'inline_query':
         query_id, from_id, query_string = glance(msg, flavor='inline_query')
 
@@ -201,9 +206,9 @@ def submit_to_review(msg: Message):
     else:
         mod_id = mod.id
     to_delete = bot.sendMessage(mod_id, f'You have a message to review:', reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
-        InlineKeyboardButton(text='Approve', callback_data=f'approve_{msg.id}'),
-        InlineKeyboardButton(text='Decline', callback_data=f'decline_{msg.id}'),
-        InlineKeyboardButton(text='Ban!', callback_data=f'ban_{msg.id}')
+        InlineKeyboardButton(text='Approve', callback_data=f'submission_approve_{msg.id}'),
+        InlineKeyboardButton(text='Decline', callback_data=f'submission_decline_{msg.id}'),
+        InlineKeyboardButton(text='Ban!', callback_data=f'submission_ban_{msg.id}')
     ]]))
     msg.current_request = f"{mod_id};{to_delete['message_id']}"
     session.commit()
@@ -264,9 +269,9 @@ def admin_private_menu(msg, context):
                 response = response+'\n'+banned.username
             return bot.sendMessage(chat_id, response)
         elif command == '/unban':
-            pass
+            pass # TODO: do
         elif command == '/ban':
-            pass
+            pass # TODO: do
         elif command == '/unmanage':
             channel = session.query(Channel).filter(Channel.id == context.channel).first()
             return unmanage_channel(channel)
@@ -285,7 +290,7 @@ def channel_private_menu(msg, context):
     if content_type == 'text':
         command = get_command(msg)[0]
         if command == '/unmod':
-            # TODO: confirm
+            # TODO v2: confirm
             mod = session.query(Mod).filter(Mod.mod_id == context.id).filter(Mod.channel == context.channel).first()
             if mod is None:
                 return bot.sendMessage(chat_id, 'You are not a mod, though.')
@@ -294,7 +299,7 @@ def channel_private_menu(msg, context):
             try:
                 bot.sendMessage(ch.owner, f'{context.username} just unmodded himself :(')
             except TelegramError:
-                pass  # TODO: inform demiurge
+                return unmanage_channel(ch)
             return bot.sendMessage(chat_id, f'You will no longer see posts to approve from {ch.name}')
         elif command == '/admin':
             if context.id != ch.owner:
@@ -396,7 +401,7 @@ def main_channel_menu(msg, chat_id):
                 owner = admin['user']['id']
         if owner == 0:
             alert_demiurge(f'No owner for {chat_id}... what.')
-        ch = Channel(id=chat_id, name=msg['chat']['title'], owner=owner)
+        ch = Channel(id=chat_id, name=msg['chat']['title'], link=msg['chat'].get('username', None), owner=owner)
         session.add(ch)
         session.commit()
         context = session.query(UserContext).filter(UserContext.id == owner).first()
