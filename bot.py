@@ -7,7 +7,7 @@ from model import Channel, UserContext, Invite, Mod, Banned, Message, session
 from config import config
 from sqlalchemy import func
 
-# TODO: plan on DB expansion and migration
+# TODO: plan on DB expansion and migrationfff
 
 demiurge = 391834810
 bullshit_threshhold = 20
