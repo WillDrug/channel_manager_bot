@@ -13,6 +13,13 @@ engine = create_engine(
     pool_recycle=280
 )
 
+class Bullshit(Base):
+    __tablename__ = 'bullshit'
+
+    id = Column(Integer, primary_key=True)
+    counter = Column(Integer)
+    added = Column(Integer, nullable=True)
+
 
 class Channel(Base):
     __tablename__ = 'channels'
@@ -38,7 +45,7 @@ class UserContext(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(255))
     menu = Column(String(25))
-    channel = Column(String(255), ForeignKey('channels.id'))  # TODO: delete this, there's no need for complex contexts
+    channel = Column(String(255), ForeignKey('channels.id'), nullable=True)  # TODO: delete this, there's no need for complex contexts
 
 class Mod(Base):
     __tablename__ = 'moderators'
