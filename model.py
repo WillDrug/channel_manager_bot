@@ -13,12 +13,20 @@ engine = create_engine(
     pool_recycle=280
 )
 
+class Bullshit(Base):
+    __tablename__ = 'bullshit'
+
+    id = Column(Integer, primary_key=True)
+    counter = Column(Integer)
+    added = Column(Integer, nullable=True)
+
 
 class Channel(Base):
     __tablename__ = 'channels'
 
     id = Column(String(255), primary_key=True)
     name = Column(String(255))  #mnemonic
+    link = Column(String(50), nullable=True)
     owner = Column(Integer)
     pinned_id = Column(Integer, nullable=True)
     modlist = relationship("Mod", cascade="all, delete-orphan")
@@ -37,7 +45,7 @@ class UserContext(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(255))
     menu = Column(String(25))
-    channel = Column(String(255), ForeignKey('channels.id'))  # TODO: delete this, there's no need for complex contexts
+    channel = Column(String(255), ForeignKey('channels.id'), nullable=True)  # TODO: delete this, there's no need for complex contexts
 
 class Mod(Base):
     __tablename__ = 'moderators'
@@ -70,11 +78,11 @@ class Message(Base):
     from_id = Column(Integer)
     from_username = Column(String(255), nullable=True)
     message_id = Column(Integer)
-    channel = Column(String(255), ForeignKey('channels.id'))
+    channel = Column(String(255), ForeignKey('channels.id'), nullable=True)
     show_username = Column(Boolean, default=False)
     assigned_mod = Column(Integer, ForeignKey('moderators.mod_id'), nullable=True)
-    submitted_on = Column(Integer)
-    published_on = Column(Integer)
+    submitted_on = Column(Integer, nullable=True)
+    published_on = Column(Integer, nullable=True)
     current_request = Column(Integer, nullable=True)
 
 
