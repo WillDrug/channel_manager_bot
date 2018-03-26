@@ -5,7 +5,6 @@ Right now it's running on a pythonanywhere web setup [here](http://t.me/@tofix).
 
 This bot is developed under AGPU license. For more details, consult `LICENSE`
 
-
 # Changelog
 ## v1.0
 Bot released with current documentation.
