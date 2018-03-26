@@ -1,3 +1,4 @@
+
 import os
 from config import config
 from sqlalchemy import create_engine
@@ -47,6 +48,11 @@ class UserContext(Base):
     menu = Column(String(25))
     channel = Column(String(255), ForeignKey('channels.id'), nullable=True)  # TODO: delete this, there's no need for complex contexts
 
+    def __repr__(self):
+        return "<UserContext(id='%s', username='%s', menu='%s', channel='%s')>" % (
+            self.id, self.username, self.menu, self.channel
+        )
+
 class Mod(Base):
     __tablename__ = 'moderators'
 
@@ -87,4 +93,4 @@ class Message(Base):
 
 
 Base.metadata.create_all(engine)
-session = sessionmaker(bind=engine)()
+new_session = sessionmaker(bind=engine)
