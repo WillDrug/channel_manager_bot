@@ -59,10 +59,10 @@ class Mod(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     channel = Column(String(255), ForeignKey('channels.id'))
-    mod_id = Column(Integer, primary_key=True)
+    mod_id = Column(Integer)
     mod_name = Column(String(255))
 
-    messages = relationship('Message', backref=backref('messages.assigned_mod'))
+    #messages = relationship('Message', backref=backref('messages.assigned_mod'))
 
 class Banned(Base):
     __tablename__ = 'banlist'
@@ -87,7 +87,7 @@ class Message(Base):
     message_id = Column(Integer)
     channel = Column(String(255), ForeignKey('channels.id'), nullable=True)
     show_username = Column(Boolean, default=False)
-    assigned_mod = Column(Integer, ForeignKey('moderators.mod_id'), nullable=True)
+    assigned_mod = Column(Integer, nullable=True)  # foreign key to Mod - mod_id. too lazy to properly add
     submitted_on = Column(Integer, nullable=True)
     published_on = Column(Integer, nullable=True)
     current_request = Column(Integer, nullable=True)
