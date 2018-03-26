@@ -36,4 +36,4 @@ class Test:
         self.path = ''
 
 
-config = Test()
+config = Production()
