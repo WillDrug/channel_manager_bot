@@ -87,4 +87,4 @@ class Message(Base):
 
 
 Base.metadata.create_all(engine)
-session = sessionmaker(bind=engine)()
+new_session = sessionmaker(bind=engine)
