@@ -47,7 +47,7 @@ class UserContext(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(255))
     menu = Column(String(25))
-    channel = Column(String(255), ForeignKey('channels.id'), nullable=True)  # TODO: delete this, there's no need for complex contexts
+    channel = Column(String(255), ForeignKey('channels.id'), nullable=True)
 
     def __repr__(self):
         return "<UserContext(id='%s', username='%s', menu='%s', channel='%s')>" % (
@@ -59,7 +59,7 @@ class Mod(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     channel = Column(String(255), ForeignKey('channels.id'))
-    mod_id = Column(Integer)
+    mod_id = Column(Integer, primary_key=True)
     mod_name = Column(String(255))
 
     messages = relationship('Message', backref=backref('messages.assigned_mod'))
