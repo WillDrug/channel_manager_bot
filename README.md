@@ -5,7 +5,6 @@ Right now it's running on a pythonanywhere web setup [here](http://t.me/@tofix).
 
 This bot is developed under AGPU license. For more details, consult `LICENSE`
 
-
 # Changelog
 ## v1.0
 Bot released with current documentation.
@@ -70,16 +69,29 @@ Each useful request halves the meter
 
 ## Commands List
 /start - Works with deep links and switches you to a proper menu
+
 /reset - Goes to root menu from anywhere
+
 /list - List channels you're modding
+
 /choose - Prompts you to choose a channel. Persists
+
 /unmod - Stop yourself from being a mod. Works from root and channel menus
+
 /admin - Go to admin menu. Works from root and channel menus.
+
 /help - Help with current menu
+
 /modlist - !ADMIN ONLY! - Lists moderators
+
 /unmod  - !ADMIN ONLY! - Strip someone's mod privileges
+
 /mod - !ADMIN ONLY! - Shows a useful button to ask someone to be a mod!
+
 /banlist - !ADMIN ONLY! - Current banlist
+
 /unban <username> - !ADMIN ONLY! - Unban some user by username
+ 
 /ban <username> - !ADMIN ONLY! - Ban some user by username (only if user has spoken to a bot at least once)
+ 
 /unmanage - !ADMIN ONLY! - Unmanages your channel. WORKS INSTANTLY! CAREFUL!
