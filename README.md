@@ -1,7 +1,7 @@
 # Channel Manager Bot
 # Introduction
 This is a poorly constructed bot, which enables submissions in telegram channels.
-Right now it's running on a pythonanywhere web setup [here](http://t.me/@tofix).
+Right now it's running on a pythonanywhere web setup [here](http://t.me/chmgr_bot).
 
 This bot is developed under AGPU license. For more details, consult `LICENSE`
 
@@ -43,7 +43,7 @@ If a channel doesn't have mods the post will go to the creator for approval.
 
 If the creator is unavailble bot will freak out and just leave the channel alltogether.
 
-1) To let someone moderate you need to write `@tofix` in any private chat and choose a channel from a drop-down menu.
+1) To let someone moderate you need to write `chmgr_bot` in any private chat and choose a channel from a drop-down menu.
 2) Alternatevily, you may run `/mod` command from `/admin` menu.
 You'll be given a button, which will prompt you to choose a chat on press.
 Funny enough, this is just a very complicated way to use method 1.

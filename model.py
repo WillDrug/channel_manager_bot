@@ -30,6 +30,7 @@ class Channel(Base):
     link = Column(String(50), nullable=True)
     owner = Column(Integer)
     pinned_id = Column(Integer, nullable=True)
+
     modlist = relationship("Mod", cascade="all, delete-orphan")
     banlist = relationship("Banned", cascade="all, delete-orphan")
     invitelist = relationship("Invite", cascade="all, delete-orphan")
