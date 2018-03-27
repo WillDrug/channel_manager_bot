@@ -10,8 +10,10 @@ bot.setWebhook(config.webhook_addr, max_connections=1)
 @app.route(f'/{config.path}', methods=["POST"])
 def telegram_webhook():
     update = request.get_json()
-    if 'message' in update.keys() or 'channel_post' in update.keys():
+    if 'message' in update.keys():
         handle(update['message'])
+    elif 'channel_post' in update.keys():
+        handle(update['channel_post'])
     else:
         logging.critical(f'Weird message {update} received')
     return "OK"
