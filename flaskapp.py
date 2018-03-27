@@ -10,5 +10,5 @@ bot.setWebhook(config.webhook_addr, max_connections=1)
 @app.route(f'/{config.path}', methods=["POST"])
 def telegram_webhook():
     update = request.get_json()
-    handle(update[update.keys()[1]])  # TODO: handle another way
+    handle(update[list(update.keys())[1]])  # TODO: handle another way
     return "OK"
