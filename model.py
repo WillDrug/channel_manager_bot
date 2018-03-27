@@ -14,6 +14,22 @@ engine = create_engine(
     pool_recycle=280
 )
 
+class Mod(Base):
+    __tablename__ = 'mods'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    channel = Column(String(255), ForeignKey('channels.id'))
+    user = Column(Integer, ForeignKey('contexts.id'))
+
+class Ban(Base):
+    __tablename__ = 'banned'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    channel = Column(String(255), ForeignKey('channels.id'))
+    user = Column(Integer, ForeignKey('contexts.id'))
+    # TODO: think about fixing. Theoretically if you find how to destroy your UserContext data -- you are unbanned
+
+
 class Channel(Base):
     __tablename__ = 'channels'
 
@@ -23,6 +39,7 @@ class Channel(Base):
     owner = Column(Integer)  # creator
 
     modref = relationship("Mod", cascade="all, delete-orphan")
+    banref = relationship("Ban", cascade="all, delete-orphan")
 
     def __repr__(self):
         return "<Channel(id='%s', name='%s', owner='%s', pinned_id='%s')>" % (
@@ -33,23 +50,18 @@ class UserContext(Base):
     __tablename__ = 'contexts'
 
     id = Column(Integer, primary_key=True)
+    username = Column(String(100))
     channel = Column(String(255), ForeignKey('channels.id'), nullable=True)
     context = Column(String(20), nullable=True)
     next = Column(String(20), nullable=True)
 
     modref = relationship("Mod", cascade="all, delete-orphan")
+    banref = relationship("Ban", cascade="all, delete-orphan")
 
     def __repr__(self):
         return "<UserContext(id='%s', chanenl='%s', context='%s', next='%s')>" % (
             self.id, self.channel, self.context, self.next
         )
-
-class Mod(Base):
-    __tablename__ = 'mods'
-
-    id = Column(Integer, autoincrement=True, primary_key=True)
-    channel = Column(String(255), ForeignKey('channels.id'))
-    user = Column(Integer, ForeignKey('contexts.id'))
 
 
 
