@@ -32,8 +32,8 @@ class Test:
         project_folder = os.path.abspath('')  # adjust as appropriate
         load_dotenv(os.path.join(project_folder, '.env'))
         self.db_conn = "sqlite:///test.db"
-        self.webhook_addr = ''
-        self.path = ''
+        self.webhook_addr = 'http://'
+        self.path = 'bot'
 
 
 config = Test()

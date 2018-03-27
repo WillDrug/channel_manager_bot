@@ -8,6 +8,7 @@ from telepot.exception import TelegramError
 from model import Channel, UserContext, Invite, Mod, Banned, Message, new_session, Bullshit
 from config import config
 from sqlalchemy import func
+import logging
 
 # TODO: plan on DB expansion and migrationfff
 # TODO: move to config + obfuscate
@@ -31,7 +32,9 @@ def handle(msg):
             if bull is not None:
                 bull.counter = int(bull.counter / 2)
         session.commit()
-    except Exception:
+        logging.debug(f'handled {msg}')
+    except Exception as e:
+        logging.critical(e)
         session.rollback()  # rollback changes made
 
 def handle_handle(msg, session):
