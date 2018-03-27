@@ -1,7 +1,10 @@
 # Channel Manager Bot
 # Introduction
 This is a poorly constructed bot, which enables submissions in telegram channels.
-Right now it's running on a pythonanywhere web setup [here](http://t.me/@tofix).
+Right now it's running on a pythonanywhere web setup [here](http://t.me/chmgr_bot).
+
+This bot is developed under AGPU license. For more details, consult `LICENSE`
+
 # Changelog
 ## v1.0
 Bot released with current documentation.
@@ -10,7 +13,9 @@ Bot released with current documentation.
 ## Planned Features
 1) Shadowban
 2) Anonymous submitting
-3) Verbosity switch for admin
+3) Full message copying not just for anonymity but to show buttons under submission.
+4) Verbosity switch for admin
+5) Flat structure, getting rid of menus altogether
 
 ## Requested Features
 
@@ -38,7 +43,7 @@ If a channel doesn't have mods the post will go to the creator for approval.
 
 If the creator is unavailble bot will freak out and just leave the channel alltogether.
 
-1) To let someone moderate you need to write `@tofix` in any private chat and choose a channel from a drop-down menu.
+1) To let someone moderate you need to write `chmgr_bot` in any private chat and choose a channel from a drop-down menu.
 2) Alternatevily, you may run `/mod` command from `/admin` menu.
 You'll be given a button, which will prompt you to choose a chat on press.
 Funny enough, this is just a very complicated way to use method 1.
@@ -61,3 +66,32 @@ The bot implements the BULLSHIT COUNTER functionality.
 When a user submits a certain number of useless requests, which are not commands nor submissions he is ignored for 24 hours all-together.
 
 Each useful request halves the meter
+
+## Commands List
+/start - Works with deep links and switches you to a proper menu
+
+/reset - Goes to root menu from anywhere
+
+/list - List channels you're modding
+
+/choose - Prompts you to choose a channel. Persists
+
+/unmod - Stop yourself from being a mod. Works from root and channel menus
+
+/admin - Go to admin menu. Works from root and channel menus.
+
+/help - Help with current menu
+
+/modlist - !ADMIN ONLY! - Lists moderators
+
+/unmod  - !ADMIN ONLY! - Strip someone's mod privileges
+
+/mod - !ADMIN ONLY! - Shows a useful button to ask someone to be a mod!
+
+/banlist - !ADMIN ONLY! - Current banlist
+
+/unban <username> - !ADMIN ONLY! - Unban some user by username
+ 
+/ban <username> - !ADMIN ONLY! - Ban some user by username (only if user has spoken to a bot at least once)
+ 
+/unmanage - !ADMIN ONLY! - Unmanages your channel. WORKS INSTANTLY! CAREFUL!
