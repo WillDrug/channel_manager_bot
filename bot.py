@@ -670,7 +670,7 @@ def main_channel_menu(msg, chat_id, session):
             bot.sendMessage(chat_id, 'Yeah, I don\'t manage that.')
             return bullshit(chat_id, session)  # TODO: differentiate between good and bad
         else:
-            return unmanage_channel(channel)  # TODO: confirmation button\personal msg
+            return unmanage_channel(channel, session)  # TODO: confirmation button\personal msg
     else:
         return True
 
@@ -739,7 +739,7 @@ def submit_to_review(msg: Message, session):
             mod_id = ch.owner
             to_delete = submit_message(ch.owner, mod_id)
         except TelegramError:
-            unmanage_channel(msg.channel)
+            unmanage_channel(msg.channel, session)
             return True
     msg.current_request = f"{mod_id};{to_delete['message_id']}"
     msg.submitted_on = int(time())
