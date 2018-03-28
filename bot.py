@@ -315,6 +315,8 @@ def parse_stupid_start(msg, session, context):
         return send_help(msg, session, context)
     channel = session.query(Channel).filter(Channel.id == text[1]).first()
     if channel is None:
+        if not check_admin(text[1], context.id)[1]:
+            return False
         return manage_channel(text[1], context.id, session)
     # else we have a valid channel and a starting point
     if not check_banned(context, channel, session):
@@ -408,11 +410,11 @@ def handle_channel(msg, session):  # Only listen for /manage and /unmanage comma
 
 
 def handle_channel_command(msg, session):  # DONE
-    if msg['text'] in ['/unmanage', f'/unmanage@{current_username}']:  # TODO: may be config literals?
-        return unmanage_channel(msg['chat']['chat_id'], msg['from']['id'], session)  # TODO: remove "issued by" check and such
-    elif msg['text'] in ['/manage', f'/manage@{current_username}']:
+    #if msg['text'] in ['/unmanage', f'/unmanage@{current_username}']:  # TODO: may be config literals?
+    #    return unmanage_channel(msg['chat']['chat_id'], True, session)  # No unmanaging from channel itself.
+    if msg['text'] in ['/manage', f'/manage@{current_username}']:
         chat = msg.get('chat', {})
-        return manage_channel(chat, msg['from']['id'], session)  # Working with Telegram Objects
+        return manage_channel(chat, -1, session)  # Working with Telegram Objects
     else:
         return False
 
@@ -420,6 +422,8 @@ def handle_channel_command(msg, session):  # DONE
 def manage_channel(chat, issued_by, session):  # id, name, link, owner DONE
     # id, name, link, owner
     bot_is_admin, issued_by_owner = check_admin(chat.get('id'), issued_by)
+    if issued_by == -1:
+        issued_by_owner = True
     if not issued_by_owner:
         return False
     if not bot_is_admin:
