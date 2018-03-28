@@ -127,8 +127,8 @@ def handle_message_text(msg, session, context):  # DONE # TODO: reply_to_message
         '/cancel': cancel_prompt,
         # '/manage':   2,
     }
-
-    route = do_route(routing_table, {msg.get('text', ''): 'placeholder'})
+    command = msg.get('text', '').split(' ')[0]
+    route = do_route(routing_table, {command: 'placeholder'})
     # check is we've been sent a known command
     if route is not False:
         l.debug(f'Routing to {route}')
@@ -158,12 +158,14 @@ def handle_message_text(msg, session, context):  # DONE # TODO: reply_to_message
         else:
             return False
     # route to NEXT object
-    # else submission:
+    # else submission not starting with /
+    if command.startswith('/'):
+        return False
     return handle_submission(msg, session, context)
 
 
 def handle_submission(msg, session, context):
-    # TODO: actual handle.
+    Message =
     pass
 
 
@@ -174,10 +176,12 @@ def send_help(msg, session, context, expanded=True):  # ONGOING
         channels = session.query(Channel.name).filter(Channel.owner == context.id).all()
         channels = channels.__str__()[1:-1].replace("'", '')
         current = session.query(Channel.name).filter(Channel.id == context.channel).first()
-        response = f'*~~Channel Manager Bot~~*\n'\
-                   f'*Current channel*: _{current}_\n'\
-                   f'*You mod the following channels:* _{modding}_\n'\
-                   f'*You admin the following channels:* _{channels}_\n'
+        if current is not None:
+            current = current[0]
+        response = f"*~~Channel Manager Bot~~*\n"\
+                   f"*Current channel*: _{current}_\n"\
+                   f"*You mod the following channels:* {'_'+modding+'_' if modding != '' else modding}\n"\
+                   f"*You admin the following channels:* {'_'+channels+'_' if channels != '' else channels}\n"
         if expanded:
             response +=  f'*Commands:*\n'\
                          f'/help : Display this message\n'\
@@ -305,7 +309,7 @@ def cancel_prompt(msg, session, context):
     context.context = None
     context.channel = None
     context.next = None
-    return True
+    return send_help(msg, session, context)
 
 def parse_stupid_start(msg, session, context):
     # context presumably new.
@@ -315,9 +319,7 @@ def parse_stupid_start(msg, session, context):
         return send_help(msg, session, context)
     channel = session.query(Channel).filter(Channel.id == text[1]).first()
     if channel is None:
-        if not check_admin(text[1], context.id)[1]:
-            return False
-        return manage_channel(text[1], context.id, session)
+        return False
     # else we have a valid channel and a starting point
     if not check_banned(context, channel, session):
         context.channel = channel.id
@@ -347,6 +349,7 @@ def unmod_callback(msg, session, context):
     bot.sendMessage(context.id, f'Unmodded {poor_bastard} from {channel.name}')
     context.context = None
     return send_help(msg, session, context)
+
 def unban_callback(msg, session, context):
     if not check_admin(context.channel, context.id)[1]:
         bot.sendMessage(context.id, 'Check yourself before you wreck yourself')
@@ -372,7 +375,7 @@ def unmanage_callback(msg, session, context):
         return False
     unmanage_channel(context.channel, context.id, session)
     context.context = None
-    return True
+    return send_help(msg, session, context)
 
 # private utility
 def check_banned(context, channel, session):
@@ -414,18 +417,15 @@ def handle_channel_command(msg, session):  # DONE
     #    return unmanage_channel(msg['chat']['chat_id'], True, session)  # No unmanaging from channel itself.
     if msg['text'] in ['/manage', f'/manage@{current_username}']:
         chat = msg.get('chat', {})
-        return manage_channel(chat, -1, session)  # Working with Telegram Objects
+        return manage_channel(chat, session)  # Working with Telegram Objects
     else:
         return False
 
 
-def manage_channel(chat, issued_by, session):  # id, name, link, owner DONE
+def manage_channel(chat, session):  # id, name, link, owner DONE
     # id, name, link, owner
-    bot_is_admin, issued_by_owner = check_admin(chat.get('id'), issued_by)
-    if issued_by == -1:
-        issued_by_owner = True
-    if not issued_by_owner:
-        return False
+    l.debug(f'Trying to manage {chat}')
+    bot_is_admin, issued_by_owner = check_admin(chat.get('id'), -1)
     if not bot_is_admin:
         try:
             bot.sendMessage(issued_by, 'Make me an admin with post and edit permissions first!')
@@ -433,23 +433,29 @@ def manage_channel(chat, issued_by, session):  # id, name, link, owner DONE
             return False
     # if all permissions present: check if owner opened a chat
     try:
-        channel = Channel(id=chat.get('id'), name=chat.get('title'), link=chat.get('username'), owner=issued_by,
-                          active=True)
+        admins = bot.getChatAdministrators(chat.get('id'))
+        owner = -1
+        for admin in admins:
+            if admin.get('status') == 'creator':
+                    owner = admin.get('user', {}).get('id')
+        if owner == -1:
+            return False
+        channel = Channel(id=chat.get('id'), name=chat.get('title'), link=chat.get('username'), owner=owner)
         session.add(channel)
-        bot.sendMessage(issued_by, f'You started managing {name}\nTo undo this you can use /unmanage from anywhere.')
+        bot.sendMessage(owner, f'You started managing {channel.name}\nTo undo this you can use /unmanage from anywhere.')
         session.commit()  # make sure all is well before messaging.
         msg_to_pin = bot.sendMessage(chat.get('id'),
                         f"This channel is now managed by a bot!\n"
                         f"If you want to submit something to this channel, message @{current_username} and choose this channel\n"
                         f"Or just go here: http://t.me/{bot.getMe().get('username')}?start={chat.get('id')}",
                         disable_web_page_preview=True,
-                        disable_notification=True)
+                        disable_notification=True,)
         bot.pinChatMessage(channel.id, msg_to_pin['message_id'])
         return True
     except TelegramError:
-        bot.sendMessage(chat.get('id'), f"To start managing, press this:\n"
-                                        f"http://t.me/{current_username}/?start={chat.get('id')}")
-        return True
+        bot.sendMessage(chat.get('id'), f"The owner needs to message the bot first.\n"
+                                        f"http://t.me/{current_username}")  # TODO: something user-friendly here.
+        return False
 
 
 def unmanage_channel(cid, issued_by, session):  # DONE
@@ -467,12 +473,12 @@ def unmanage_channel(cid, issued_by, session):  # DONE
 
 # inline
 def handle_inline(msg, session):
-    pass
+    msg = msg['inline_query']
+    query = msg.get('query')
 
 
 def handle_chosen_inline(msg, session):
-    pass
-
+    msg = msg['chosen_inline_result']
 
 # callback
 def handle_callback_query(msg, session):

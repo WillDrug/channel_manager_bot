@@ -29,6 +29,15 @@ class Ban(Base):
     user = Column(Integer, ForeignKey('contexts.id'))
     # TODO: think about fixing. Theoretically if you find how to destroy your UserContext data -- you are unbanned
 
+class Message(Base):
+    __tablename__ = 'messages'
+
+    # id = Column(Integer, autoincrement=True, primary_key=True)
+    from_id = Column(Integer, ForeignKey('contexts.id'), primary_key=True)
+    message_id = Column(Integer, primary_key=True)
+    channel = Column(String(255), ForeignKey('channels.id'))
+    assigned_mod = Column(Integer, ForeignKey('contexts.id'))
+    # ... ? TODO: update or bot updates will kill shit.
 
 class Channel(Base):
     __tablename__ = 'channels'
@@ -40,11 +49,14 @@ class Channel(Base):
 
     modref = relationship("Mod", cascade="all, delete-orphan")
     banref = relationship("Ban", cascade="all, delete-orphan")
+    msgref = relationship("Message", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return "<Channel(id='%s', name='%s', owner='%s', pinned_id='%s')>" % (
-            self.id, self.name, self.owner, self.pinned_id
+        return "<Channel(id='%s', name='%s', link='%s', owner='%s')>" % (
+            self.id, self.name, self.link, self.owner
         )
+
+
 
 class UserContext(Base):
     __tablename__ = 'contexts'
@@ -57,6 +69,7 @@ class UserContext(Base):
 
     modref = relationship("Mod", cascade="all, delete-orphan")
     banref = relationship("Ban", cascade="all, delete-orphan")
+    msgref = relationship("Message", cascade="all, delete-orphan")
 
     def __repr__(self):
         return "<UserContext(id='%s', chanenl='%s', context='%s', next='%s')>" % (
