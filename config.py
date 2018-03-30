@@ -26,6 +26,7 @@ class Production:
         self.path = path
         self.demiurge = 391834810
         self.bullshit_threshhold = 20
+        self.bullshit_punish = 86400
         init_proxy()
 
 class Test:
@@ -37,7 +38,8 @@ class Test:
         self.webhook_addr = 'http://'
         self.path = 'bot'
         self.demiurge = 391834810
-        self.bullshit_threshhold = 200
+        self.bullshit_threshhold = 20
+        self.bullshit_punish = 2
 
 
 config = Test()
