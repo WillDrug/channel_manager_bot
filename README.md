@@ -85,3 +85,5 @@ All commands prompt channel if none selected or if fucntion is not permitted for
 * `/mod`: Useful button to invite mods
 * `/unmanage`: ADMIN: Bot leaves channel. All is deleted.
 * `/manage`: FROM CHANNEL: Start managing a channel
+
+<right><sub>you can [buy me a coffee](https://www.paypal.me/willdrug) if you like this</sub></right>
