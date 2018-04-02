@@ -19,7 +19,7 @@ Bot released with current documentation.
 - [ ] Anonymous submitting
 - [ ] Full message copying not just for anonymity but to show buttons under submission.
 - [ ] Verbosity switch for admin
-- [x] Flat structure
+- [x] ~~Flat structure~~
 
 ## Requested Features
 Nothing! Be the first one to [request something](https://github.com/WillDrug/channel_manager_bot/issues)!
