@@ -15,11 +15,11 @@ Bot released with current documentation.
 
 # Feature Creep
 ## Planned Features
-[ ] Shadowban
-[ ] Anonymous submitting
-[ ] Full message copying not just for anonymity but to show buttons under submission.
-[ ] Verbosity switch for admin
-[ ] Flat structure
+- [ ] Shadowban
+- [ ] Anonymous submitting
+- [ ] Full message copying not just for anonymity but to show buttons under submission.
+- [ ] Verbosity switch for admin
+- [x] Flat structure
 
 ## Requested Features
 Nothing! Be the first one to [request something](https://github.com/WillDrug/channel_manager_bot/issues)!
