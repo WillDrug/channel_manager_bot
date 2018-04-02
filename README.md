@@ -19,14 +19,14 @@ Bot released with current documentation.
 - [ ] Anonymous submitting
 - [ ] Full message copying not just for anonymity but to show buttons under submission.
 - [ ] Verbosity switch for admin
-- [x] ~~Flat structure~~
+- [x] ~~Flat structure~~ done in v1.1
 
 ## Requested Features
 Nothing! Be the first one to [request something](https://github.com/WillDrug/channel_manager_bot/issues)!
 
 # Functionality
 This bot includes the following features:
-## Enabling
+## Turning On
 For the bot to work you need to:
  1) Message the bot once. This will make the rest of the process less complicated.
  2) Add it to the channel you created as an admin with _edit_ and _post_ privileges
