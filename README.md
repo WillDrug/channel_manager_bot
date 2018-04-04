@@ -48,7 +48,7 @@ If a channel doesn't have mods the post will go to the creator for approval.
 
 If the creator is unavailble bot will *freak out and just leave the channel alltogether*.
 
-1) To let someone moderate you need to write `chmgr_bot` in any private chat and choose a channel from a drop-down menu.
+1) To let someone moderate you need to write `@chmgr_bot` in any private chat and choose a channel from a drop-down menu.
 2) Alternatevily, you may run `/mod` command. If you have any channel you're admining -- you'll be given a button, which will prompt you to choose a chat on press.
 
 Funny enough, this is just a very complicated way to use method 1.
