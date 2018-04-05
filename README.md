@@ -16,6 +16,7 @@ Bot released with current documentation.
 3) Full message copying not just for anonymity but to show buttons under submission.
 4) Verbosity switch for admin
 5) Flat structure, getting rid of menus altogether
+6) Admin toggle to get submissions
 
 ## Requested Features
 

@@ -27,6 +27,8 @@ class Production:
         self.demiurge = 391834810
         self.bullshit_threshhold = 20
         self.bullshit_punish = 86400
+        self.poke_remind = 43200
+        self.poke_resend = 86400
         init_proxy()
 
 class Test:
@@ -40,6 +42,8 @@ class Test:
         self.demiurge = 391834810
         self.bullshit_threshhold = 20
         self.bullshit_punish = 2
+        self.poke_remind = 1
+        self.poke_resend = 5
 
 
 config = Test()

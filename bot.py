@@ -211,13 +211,12 @@ def handle_message_text(msg, session,
 
 def handle_submission(msg, session, context):
     # if no command issued - a new submission is presumed
-    pending = session.query(Message).filter(Message.from_id == context.id).filter(
-        Message.channel == context.channel).filter(Message.assigned_mod is None).first()
+    # last submission will be with no mod assigned and might be even without channel
+    pending = session.query(Message).filter(Message.from_id == context.id).filter(Message.assigned_mod.is_(None)).first()
     if pending is not None:
         session.delete(pending)
     message = Message(from_id=context.id, channel=context.channel, message_id=msg.get('message_id'))
     session.add(message)
-    print(message)
     # request channel if none chosen
     if context.channel is None:
         context.context = 'choose'
@@ -238,7 +237,10 @@ def handle_submission(msg, session, context):
 def submit_command(msg,session,context, force_message=None):
     l.debug(f'Submit command issued, with {force_message} force')
     if force_message is None:
-        message = session.query(Message).filter(Message.from_id == context.id).first()
+        l.debug(f'trying to get message from {context.id} for channel {context.channel} with no assigned mod.')
+        message = session.query(Message).filter(Message.from_id == context.id).filter(Message.assigned_mod.is_(None)).first()
+        if message.channel is None:
+            message.channel = context.channel
         l.debug(f'Pending message is {message}')
         if message is None:
             bot.sendMessage(context.id, 'Just send me anything and I\'ll make a channel post out of it.\n'
@@ -297,8 +299,11 @@ def submit_to_review(msg, session, context, exclude=None):
         mod = session.query(Mod.user, func.count(Message.id).label('total')).outerjoin(Message, Message.assigned_mod == Mod.user).filter(Mod.channel == context.channel).group_by(Mod.user).order_by(asc('total')).first()
     else:
         mod = session.query(Mod.user, func.count(Message.id).label('total')).outerjoin(Message, Message.assigned_mod == Mod.user).filter(Mod.channel == context.channel).filter(Mod.user != exclude).group_by(Mod.user).order_by(asc('total')).first()
-    if mod is None:
-        mod = session.query(UserContext.id).join(Channel, Channel.owner == UserContext.id).filter(Channel.id == context.channel).first()
+    owner = session.query(Channel.owner, func.count(Message.id)).outerjoin(Message, Message.assigned_mod == Channel.owner).filter(Channel.id == context.channel).first()
+    if mod is None:  # TODO: make admin capable of switching off submissions approval for himself.
+        mod = owner
+    elif mod[1] > (owner[1] or 0):
+        mod = owner
     if mod is None:
         # TODO: really should alert demiurge here
         return False
@@ -354,12 +359,12 @@ def poke_mod(msg, session, context):
     counter_remind = 0
     counter_resend = 0
     for message in messages:
-        if int(time()) - message.submit_on > 43200:  # 12 hours, reminder
+        if int(time()) - message.submit_on > config.poke_remind:  # 12 hours, reminder
             bot.sendMessage(message.assigned_mod, f'Someone really wants this message to be submitted!', reply_to_message_id=message.assigned_id)
             counter_remind += 1
-        elif int(time()) - message.submit_on > 86400: # 24 hours, resend
+        elif int(time()) - message.submit_on > config.poke_resend:  # 24 hours, resend
             bot.editMessageReplyMarkup((message.assigned_mod, message.assigned_id), reply_markup=InlineKeyboardMarkup(inline_keyboard=[[]]))
-            submit_to_review(message)
+            submit_to_review(message, exclude=message.assigned_mod)
             counter_resend = 0
     response = ""
     if counter_remind == 0 and counter_resend == 0:
@@ -561,6 +566,7 @@ def cancel_prompt(msg, session, context):
     context.context = None
     context.channel = None
     context.next = None
+
     return send_help(msg, session, context)
 
 
