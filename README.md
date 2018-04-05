@@ -96,3 +96,5 @@ Each useful request halves the meter
 /ban <username> - !ADMIN ONLY! - Ban some user by username (only if user has spoken to a bot at least once)
  
 /unmanage - !ADMIN ONLY! - Unmanages your channel. WORKS INSTANTLY! CAREFUL!
+
+/submit - resends a last submission you worked on. otherwise it's replaced. Only one unassigned submission is permitted at a time.

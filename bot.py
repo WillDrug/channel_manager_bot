@@ -239,14 +239,14 @@ def submit_command(msg,session,context, force_message=None):
     if force_message is None:
         l.debug(f'trying to get message from {context.id} for channel {context.channel} with no assigned mod.')
         message = session.query(Message).filter(Message.from_id == context.id).filter(Message.assigned_mod.is_(None)).first()
-        if message.channel is None:
-            message.channel = context.channel
-        l.debug(f'Pending message is {message}')
         if message is None:
             bot.sendMessage(context.id, 'Just send me anything and I\'ll make a channel post out of it.\n'
                                         'Use /cancel if you have changed your ming',
                             reply_markup=ReplyKeyboardRemove())
             return True
+        if message.channel is None:
+            message.channel = context.channel
+        l.debug(f'Pending message is {message}')
     else:
         message = force_message
     if context.channel is None:
@@ -409,7 +409,8 @@ def send_help(msg, session, context, expanded=True):  # ONGOING
                         f'/cancel : Clear current channel and cancel current request\n' \
                         f'/poke : Poke if moderators are taking too long with your post. ' \
                         f'12 hours delay will send a reminder, 24 hour delay will re-send message for approval. ' \
-                        f'_If you are the owner, all lazy mods will be poked._'
+                        f'_If you are the owner, all lazy mods will be poked._\n' \
+                        f'/submit : re-send a submission you last cancelled'
         bot.sendMessage(context.id, response,
                         disable_web_page_preview=True,
                         parse_mode='markdown',
