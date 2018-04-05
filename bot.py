@@ -711,10 +711,6 @@ def send_channel_choice(cid, channels):  # DONE
 
 # channel
 def handle_channel(msg, session):  # Only listen for /manage and /unmanage commands  DONE
-    # TODO:
-    # {'channel_post': {'message_id': 299,
-    #                  'chat': {'id': -1001204546755, 'title': 'Test Channel This is, yes', 'username': 'test_ch_ch_ch',
-    #                           'type': 'channel'}, 'date': 1522263302, 'new_chat_title': 'Test Channel This is, yes'}}
     msg = msg['channel_post']
     routing_table = {
         'text': handle_channel_command,
