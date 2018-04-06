@@ -777,7 +777,8 @@ def manage_channel(chat, session):  # id, name, link, owner DONE
                                      f"Or just go [here](http://t.me/"
                                      f"{bot.getMe().get('username')}?start={chat.get('id')})",
                                      disable_web_page_preview=True,
-                                     disable_notification=True, )
+                                     disable_notification=True, 
+                                     parse_mode='markdown')
         bot.pinChatMessage(channel.id, msg_to_pin['message_id'])
         return True
     except TelegramError:
