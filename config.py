@@ -24,6 +24,11 @@ class Production:
         self.db_conn = "mysql://willdrug:%s@willdrug.mysql.pythonanywhere-services.com/willdrug$cmb" % os.environ.get('SQLPWD')
         self.webhook_addr = f"https://willdrug.pythonanywhere.com/{path}"
         self.path = path
+        self.demiurge = 391834810
+        self.bullshit_threshhold = 20
+        self.bullshit_punish = 86400
+        self.poke_remind = 43200
+        self.poke_resend = 86400
         init_proxy()
 
 class Test:
@@ -34,6 +39,11 @@ class Test:
         self.db_conn = "sqlite:///test.db"
         self.webhook_addr = 'http://'
         self.path = 'bot'
+        self.demiurge = 391834810
+        self.bullshit_threshhold = 20
+        self.bullshit_punish = 2
+        self.poke_remind = 1
+        self.poke_resend = 5
 
 
 config = Production()
