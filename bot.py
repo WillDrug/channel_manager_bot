@@ -774,10 +774,10 @@ def manage_channel(chat, session):  # id, name, link, owner DONE
                                      f"This channel is now managed by a bot!\n"
                                      f"If you want to submit something to this channel, "
                                      f"message @{current_username} and choose this channel\n"
-                                     f"Or just go <a href='(http://t.me/{bot.getMe().get('username')}?start={chat.get('id')})'>here</a>",
+                                     f"Or just go here: \n"
+                                     f"(http://t.me/{bot.getMe().get('username')}?start={chat.get('id')})",
                                      disable_web_page_preview=True,
-                                     disable_notification=True, 
-                                     parse_mode='HTML')
+                                     disable_notification=True)
         bot.pinChatMessage(channel.id, msg_to_pin['message_id'])
         return True
     except TelegramError:
