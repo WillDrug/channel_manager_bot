@@ -401,7 +401,8 @@ def send_help(msg, session, context, expanded=True):  # ONGOING
                    f"*You mod the following channels:* {'_'+modding+'_' if modding != '' else modding}\n" \
                    f"*You admin the following channels:* {'_'+channels+'_' if channels != '' else channels}\n" \
                    f"You can find me [at my github](https://github.com/WillDrug/channel_manager_bot/) " \
-                   f"to yell, critique or request features."
+                   f"to yell, critique or request features.\n" \
+                   f"*WARNING!* My server is made out of potatoes. I can be slow."
         if expanded:
             response += f'*Commands:*\n' \
                         f'/help : Display this message\n' \
@@ -775,7 +776,7 @@ def manage_channel(chat, session):  # id, name, link, owner DONE
                                      f"If you want to submit something to this channel, "
                                      f"message @{current_username} and choose this channel\n"
                                      f"Or just go here: \n"
-                                     f"(http://t.me/{bot.getMe().get('username')}?start={chat.get('id')})",
+                                     f"http://t.me/{bot.getMe().get('username')}?start={chat.get('id')}",
                                      disable_web_page_preview=True,
                                      disable_notification=True)
         bot.pinChatMessage(channel.id, msg_to_pin['message_id'])
