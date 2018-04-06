@@ -68,13 +68,13 @@ def handle(msg):
     try:
         res = route_message(msg, session)
         if not res:
-            l.info(f'Got bullshit msg')
+            l.debug(f'Got bullshit msg')
             if inbound_field is not False:
                 on_bullshit(bullshit)
             session.commit()
             #return False
         else:
-            l.info(f'Got ok msg')
+            l.debug(f'Got ok msg')
             if inbound_field is not False:
                 on_success(bullshit)
             session.commit()
@@ -796,7 +796,8 @@ def unmanage_channel(cid, issued_by, session):  # DONE
     session.delete(ch)
     session.commit()  # intermediate commit is a go
     bot.unpinChatMessage(cid)
-    bot.sendMessage(cid, "This chat is no longer managed.\nChannel Manager Bot has left the building!", reply_markup=ReplyKeyboardRemove())
+    bot.sendMessage(cid, "This chat is no longer managed.\nChannel Manager Bot has left the building!")
+    bot.sendMessage(issued_by, "It is done. D:", reply_markup=ReplyKeyboardRemove())
     bot.leaveChat(cid)
 
 
