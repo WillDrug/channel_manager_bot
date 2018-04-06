@@ -21,7 +21,7 @@ class Production:
     def __init__(self):
         project_folder = os.path.expanduser('~/channel_manager_bot')  # adjust as appropriate
         load_dotenv(os.path.join(project_folder, '.env'))
-        self.db_conn = "mysql://willdrug:%s@willdrug.mysql.pythonanywhere-services.com/willdrug$cmb" % os.environ.get('SQLPWD')
+        self.db_conn = "mysql://willdrug:%s@willdrug.mysql.pythonanywhere-services.com/willdrug$cmb?charset=utf8" % os.environ.get('SQLPWD')
         self.webhook_addr = f"https://willdrug.pythonanywhere.com/{path}"
         self.path = path
         self.demiurge = 391834810
