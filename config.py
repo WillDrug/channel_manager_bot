@@ -46,4 +46,4 @@ class Test:
         self.poke_resend = 5
 
 
-config = Test()
+config = Production()

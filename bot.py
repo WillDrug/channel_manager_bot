@@ -279,20 +279,23 @@ def submit_command(msg,session,context, force_message=None):
                     ]]))
     return True
 
-def submit_to_review(msg, session, context, exclude=None):
-    message = session.query(Message).filter(Message.channel == context.channel).filter(Message.from_id == context.id).filter(Message.submit_on.is_(None)).first()
-    if message is None:  # WHAT?! TODO: alert demiurge
-        return False
-    text = msg.get('text')
-    if text not in ['Submit', 'Another channel']:
-        session.delete(message)
-        return False
-    if text == 'Another channel':
-        context.channel = None
+def submit_to_review(msg, session, context, exclude=None, force=None):
+    if force is not None:
+        message = force
+    else:
+        message = session.query(Message).filter(Message.channel == context.channel).filter(Message.from_id == context.id).filter(Message.submit_on.is_(None)).first()
+        if message is None:  # WHAT?! TODO: alert demiurge
+            return False
+        text = msg.get('text')
+        if text not in ['Submit', 'Another channel']:
+            session.delete(message)
+            return False
+        if text == 'Another channel':
+            context.channel = None
+            context.context = None
+            context.next = '/submit'
+            return True
         context.context = None
-        context.next = '/submit'
-        return True
-    context.context = None
     # TODO: check if poster is owner \ admin and go with automatic
     # TODO: OR EITHER don't even handle submissions to owned channels. Why would you?
     if exclude is None:  # TODO: graceful query handling, although nothing really is affected here
@@ -309,7 +312,7 @@ def submit_to_review(msg, session, context, exclude=None):
         return False
     mod = mod[0]
     bot.forwardMessage(mod, context.id, message.message_id, disable_notification=True)
-    sent = bot.sendMessage(mod, f'This is a submission! Choose what to do with is!',
+    sent = bot.sendMessage(mod, f'This is a submission! Choose what to do with it!',
                            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
                                InlineKeyboardButton(text='Approve', callback_data=f'approve_{message.from_id}_{message.message_id}'),
                                InlineKeyboardButton(text='Decline', callback_data=f'decline_{message.from_id}_{message.message_id}'),
@@ -346,9 +349,9 @@ def poke_mod(msg, session, context):
         # TODO: alert demiurge ? something's fucked
         return False
     if context.id == channel.owner:
-        messages = session.query(Message).filter(Message.channel == context.channel).filter(Message.submit_on.isnot_(None)).all()
+        messages = session.query(Message).filter(Message.channel == context.channel).filter(Message.submit_on is not None).all()
     else:
-        messages = session.query(Message).filter(Message.from_id == context.id).filter(Message.channel == context.channel).filter(Message.submit_on.isnot_(None)).first()
+        messages = session.query(Message).filter(Message.from_id == context.id).filter(Message.channel == context.channel).filter(Message.submit_on is not None).first()
         if messages is None:
             messages = []
         else:
@@ -359,13 +362,14 @@ def poke_mod(msg, session, context):
     counter_remind = 0
     counter_resend = 0
     for message in messages:
-        if int(time()) - message.submit_on > config.poke_remind:  # 12 hours, reminder
+        if int(time()) - message.submit_on > config.poke_resend:  # 24 hours, resend
+            bot.editMessageText((message.assigned_mod, message.assigned_id), '~~This is a submission! Choose what to do with it!~~\nYou have waited too long to do something.', reply_markup=InlineKeyboardMarkup(inline_keyboard=[[]]), parse_mode='markdown')
+            #bot.editMessageReplyMarkup((message.assigned_mod, message.assigned_id), reply_markup=InlineKeyboardMarkup(inline_keyboard=[[]]))
+            submit_to_review(msg, session, context, exclude=message.assigned_mod, force=message)
+            counter_resend += 1
+        elif int(time()) - message.submit_on > config.poke_remind:  # 12 hours, reminder
             bot.sendMessage(message.assigned_mod, f'Someone really wants this message to be submitted!', reply_to_message_id=message.assigned_id)
             counter_remind += 1
-        elif int(time()) - message.submit_on > config.poke_resend:  # 24 hours, resend
-            bot.editMessageReplyMarkup((message.assigned_mod, message.assigned_id), reply_markup=InlineKeyboardMarkup(inline_keyboard=[[]]))
-            submit_to_review(message, exclude=message.assigned_mod)
-            counter_resend = 0
     response = ""
     if counter_remind == 0 and counter_resend == 0:
         bot.sendMessage(context.id, f'No message waited more than 12 hours.')
