@@ -794,8 +794,9 @@ def unmanage_channel(cid, issued_by, session):  # DONE
         return False
     # channel exists and request is by owner
     session.delete(ch)
+    session.commit()  # intermediate commit is a go
     bot.unpinChatMessage(cid)
-    bot.sendMessage(cid, "This chat is no longer managed.\nChannel Manager Bot has left the building!")
+    bot.sendMessage(cid, "This chat is no longer managed.\nChannel Manager Bot has left the building!", reply_markup=ReplyKeyboardRemove())
     bot.leaveChat(cid)
 
 
