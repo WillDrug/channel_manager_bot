@@ -29,8 +29,8 @@ class Mod(Base):
     __tablename__ = 'mods'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    channel = Column(String(255), ForeignKey('channels.id'))
-    user = Column(Integer, ForeignKey('contexts.id'))
+    channel = Column(String(255), ForeignKey('channels.id', ondelete='CASCADE'))
+    user = Column(Integer, ForeignKey('contexts.id', ondelete='CASCADE'))
 
     def __repr__(self):
         return "<Mod(id='%s', chanenl='%s', user='%s')>" % (
@@ -41,8 +41,8 @@ class Ban(Base):
     __tablename__ = 'banned'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    channel = Column(String(255), ForeignKey('channels.id'))
-    user = Column(Integer, ForeignKey('contexts.id'))
+    channel = Column(String(255), ForeignKey('channels.id', ondelete='CASCADE'))
+    user = Column(Integer, ForeignKey('contexts.id', ondelete='CASCADE'))
     # TODO: think about fixing. Theoretically if you find how to destroy your UserContext data -- you are unbanned
     def __repr__(self):
         return "<Ban(id='%s', chanenl='%s', user='%s')>" % (
@@ -53,9 +53,9 @@ class Message(Base):
     __tablename__ = 'messages'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    from_id = Column(Integer, ForeignKey('contexts.id'))
+    from_id = Column(Integer, ForeignKey('contexts.id', ondelete='CASCADE'))
     message_id = Column(Integer)
-    channel = Column(String(255), ForeignKey('channels.id'))
+    channel = Column(String(255), ForeignKey('channels.id', ondelete='CASCADE'))
     assigned_mod = Column(Integer, nullable=True)  #ForeignKey('contexts.id'),
     assigned_id = Column(Integer, nullable=True)
     submit_on = Column(Integer, nullable=True)
@@ -68,7 +68,7 @@ class Message(Base):
 class Invite(Base):
     __tablename__ = 'invites'
 
-    channel = Column(String(255), ForeignKey('channels.id'), primary_key=True)
+    channel = Column(String(255), ForeignKey('channels.id', ondelete='CASCADE'), primary_key=True)
     code = Column(String(36), primary_key=True)
 
     def __repr__(self):
@@ -101,7 +101,7 @@ class UserContext(Base):
 
     id = Column(Integer, primary_key=True)
     username = Column(String(100))
-    channel = Column(String(255), ForeignKey('channels.id'), nullable=True)
+    channel = Column(String(255), ForeignKey('channels.id', ondelete='CASCADE'), nullable=True)
     context = Column(String(20), nullable=True)
     next = Column(String(20), nullable=True)
 
