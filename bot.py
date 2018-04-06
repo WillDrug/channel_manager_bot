@@ -768,14 +768,13 @@ def manage_channel(chat, session):  # id, name, link, owner DONE
         channel = Channel(id=chat.get('id'), name=chat.get('title'), link=chat.get('username'), owner=owner)
         session.add(channel)
         bot.sendMessage(owner,
-                        f'You started managing {channel.name}\nTo undo this you can use /unmanage from anywhere.')
+                        f'You started managing {channel.name}\nTo undo this you can use /unmanage here.')
         session.commit()  # make sure all is well before messaging.
         msg_to_pin = bot.sendMessage(chat.get('id'),
                                      f"This channel is now managed by a bot!\n"
                                      f"If you want to submit something to this channel, "
                                      f"message @{current_username} and choose this channel\n"
-                                     f"Or just go [here](http://t.me/"
-                                     f"{bot.getMe().get('username')}?start={chat.get('id')})",
+                                     f"Or just go [here](http://t.me/{bot.getMe().get('username')}?start={chat.get('id')})",
                                      disable_web_page_preview=True,
                                      disable_notification=True, 
                                      parse_mode='markdown')
