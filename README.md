@@ -1,3 +1,6 @@
+# WARNING
+Right now this repo has security issues with it's dependencies.
+I will remove this warning when I bother to update it.
 # Channel Manager Bot
 # Introduction
 This is a poorly constructed bot, which enables submissions in telegram channels.
